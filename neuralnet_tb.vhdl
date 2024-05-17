@@ -95,7 +95,7 @@ begin
         variable good_v      : boolean;
     begin
         wait for 10 ns;
-        for k in 0 to 10 loop
+        for k in 0 to 4127 loop
             file_open(input_file, INPUT_FOLDER & "i_" & fIntToStringLeading0(k, 7) & ".txt",  read_mode);
             file_open(output_file, OUTPUT_FOLDER & "i_" & fIntToStringLeading0(k, 7) & ".txt",  write_mode);
             ena <= '0';
@@ -109,12 +109,12 @@ begin
             end loop;
             wait for 100 ns;
             ena <= '1';
-            wait for 100 ns;
+            wait for 200 ns;
             for j in 0 to l4o_size-1 loop
                 write(output_line, to_integer(signed(data_out(j))), left, 10);
                 writeline(output_file, output_line);
             end loop;    
-            wait for 100 ns;
+            wait for 200 ns;
         end loop;
         wait;
     end process;

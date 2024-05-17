@@ -124,7 +124,7 @@ begin
                     end loop;
                     a(j) <= sumvar;
                     c(j) <= a(j)(ACCUM_WIDTH - 1 downto FRC_BITWIDTH); -- drop FRC_BITWIDTH number of bits before moving on to bias comp
-                    b(j) <= signed(biases_i(j)); -- this will only be at the correct length at layer 1, so it needs a resize; 
+                    b(j) <= signed(biases_i(j)); 
                     outvar := resize(c(j),Y_WIDTH) + resize(b(j),Y_WIDTH); -- extend the sign bits of b and c to match y
                     if (HAS_RELU = '0') then
                         y(j) <= outvar;
