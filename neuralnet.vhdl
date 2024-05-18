@@ -24,10 +24,10 @@ entity neuralnet is
     Port (clk      : in STD_LOGIC;
           ena      : in STD_LOGIC;
           n_data_i : in layer_io_vector_type(0 to l1i_size - 1)(dec_bw + frc_bw + 1 - 1 downto 0);
-          n_data_o : out layer_io_vector_type(0 to l4o_size - 1)(2*(dec_bw+1)+18 + frc_bw + 1 + integer(ceil(log2(real(l4i_size)))) - 1 downto 0)); -- manually computed +25
+          n_data_o : out layer_io_vector_type(0 to l4o_size - 1)(2*(dec_bw+1)+18 + frc_bw + 1 + integer(ceil(log2(real(l4i_size)))) - 1 downto 0)); -- manually computed +18
 end neuralnet;
 
--- layer expansions: 5, 11, 18, 25
+-- layer expansions: 5, 11, 18, 25 (the equation in n_data_o's size becomes equal to this)
 
 architecture Behavioral of neuralnet is
     component layer

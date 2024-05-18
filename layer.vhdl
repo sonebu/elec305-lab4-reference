@@ -13,8 +13,8 @@ entity layer is
     Generic (INPUT_SIZE     : integer := 8;
              OUTPUT_SIZE    : integer := 16;
              HAS_RELU       : std_logic := '0'; 
-             DEC_BITWIDTH   : integer := 0;
-             CARRY_DEC_BW   : integer := 0;
+             DEC_BITWIDTH   : integer := 0; -- this is the bitwidth that the original input, weights and biases use
+             CARRY_DEC_BW   : integer := 0; -- this is the bitwidth that gets carried over from the previous layer due to expansion on the decimal part of the Q format
              FRC_BITWIDTH   : integer := 15);
     Port (clk       : in STD_LOGIC;
           ena       : in STD_LOGIC;
@@ -46,8 +46,9 @@ architecture Behavioral of layer is
     type biases is array(0 to OUTPUT_SIZE - 1) of signed(DEC_BITWIDTH + FRC_BITWIDTH + 1 - 1 downto 0);
     signal b : biases := (others=>(others=>'0'));
 
-    -- NOTE: the weights are resized to CARRY_DEC_BW bitwidth, so they cannot contain values there, 
-    --       therefore we do not count those in for the expansion twice (it only leaks in from the input)
+    -- NOTE: since the weights are *resized* to CARRY_DEC_BW bitwidth, they cannot contain values in those expanded bits, 
+    --       therefore we do not count those bits in for the expansion twice (it only leaks in from the input).
+    --       If we counted them twice we would have MULT_WIDTH := 2*(DEC_BITWIDTH + FRC_BITWIDTH + CARRY_DEC_BW + 1)
     constant MULT_WIDTH : integer := 2*(DEC_BITWIDTH + FRC_BITWIDTH + 1) + CARRY_DEC_BW; 
     
     constant ACCUM_WIDTH: integer := MULT_WIDTH + integer(ceil(log2(real(INPUT_SIZE))));
@@ -66,7 +67,7 @@ architecture Behavioral of layer is
     
     constant zeros_4relu : signed(Y_WIDTH - 1 downto 0) := (others=>'0');
 
-    type layer_state is (s_idle, s_mult, s_accum); -- if we don't do this the a and c arrays get locked up since a is waiting for 
+    type layer_state is (s_idle, s_mult, s_accum); -- if we don't do this in two states, the a and c arrays get locked up due to array reduction constraints 
     signal ls_t0, ls_t1: layer_state;
 begin
     
