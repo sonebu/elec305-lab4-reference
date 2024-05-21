@@ -1,1 +1,3 @@
 all .vhdl files have to be VHDL-2008
+
+the neuralnet_4bit.vhdl file is just for testing to see if the synthesized circuit will fit on the basys3 (it didn't, still needs more LUTs than available)
